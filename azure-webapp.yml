@@ -1,0 +1,36 @@
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Checkout the repository code
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'  # Specify your Python version
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flask  # Install Flask and any other dependencies your app requires
+
+    - name: Deploy to Azure Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: FlaskAPINew  # Replace with your Azure Web App name
+        slot-name: production  # Optional: if deploying to a specific slot
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: .  # Deploy the current directory as the package
+
+    - name: Run Tests  # Example: Add test steps based on your application's testing framework
+      run: |
+        # Replace with your actual test command
+        python -m unittest discover tests/
